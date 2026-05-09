@@ -65,22 +65,6 @@ flowchart TD
 
 ---
 
-## Agent Design Patterns
-
-| Pattern | Where Applied |
-|---|---|
-| **Decomposition** | Classify → Plan → Write: problem is fully structured before any prose is generated |
-| **Self-reflection** | Storyteller re-reads and self-corrects its draft before reaching the Judge |
-| **Agentic judge-revise loop** | Score-gated loop with max 2 iterations; threshold 9/12 (75%) |
-| **Conditional execution** | Self-reflection is skipped when expansion ran — logs confirmed 0 words added in all prior runs |
-| **Durable state** | SQLite with WAL mode persists every story across page refreshes and server restarts |
-| **Context injection** | Revision passes actual story text into the reviser, not a prompt summary |
-| **Streaming output** | Story rendered word-by-word via OpenAI `stream=True` and `st.write_stream()` |
-| **In-place update** | Revisions overwrite the same DB row — one sidebar entry per story concept, never duplicates |
-| **Exponential backoff retry** | All `call_model()` calls retry up to 3× on 429 / 5xx / timeout with jitter |
-
----
-
 ## Features
 
 ### Core
