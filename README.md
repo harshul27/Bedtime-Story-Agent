@@ -59,12 +59,9 @@ flowchart TD
 |---|---|---|
 | **Classifier** | Structured JSON output at temperature 0.1 | Downstream agents need typed, deterministic metadata |
 | **Planner** | Chain-of-thought (7 explicit beats) | Forces the model to reason about plot structure before committing to prose |
-| **Storyteller** | Role + age-calibrated vocabulary profile + constraint checklist + few-shot example | Role defines style; profiles enforce age-appropriate language; constraints add six engagement devices; few-shot anchors the tone |
-| **Storyteller (scary)** | Safety redirect injection | When `has_scary_elements=True`, an additional block redirects monsters/ghosts to gentle alternatives before any prose is written |
-| **Expand** | Explicit word-count target + rule re-enforcement | Combats `gpt-3.5-turbo`'s tendency to generate short stories despite instructions |
-| **Self-reflection** | Self-critique prompting (conditional) | Model fixes its own draft before the Judge — skipped when expansion already enforced the rules |
+| **Storyteller** | Role + age-calibrated vocabulary profile + constraint checklist + few-shot example | Role defines style; profiles enforce age-appropriate language; constraints add six engagement devices; few-shot anchors the tone. When `has_scary_elements=True`, an additional block redirects monsters/ghosts to gentle alternatives before any prose is written |
 | **Judge** | Structured JSON rubric at temperature 0.1 | Enables programmatic score comparison; scores clamped to [0,2] and recalculated to prevent hallucinated totals |
-| **Reviser** | Targeted revision + context injection + expansion detection | Actual previous story text passed in; "make it longer"-type requests lift the length constraint and double the target word count |
+| **Reviser** | Targeted revision + context injection + expansion detection | Actual previous story text passed in; "make it longer"-type requests lift the length constraint and double the target word count.  Model fixes its own draft before the Judge — skipped when expansion already enforced the rules |
 
 ---
 
@@ -92,12 +89,6 @@ flowchart TD
 - **Story arc**: 7-beat narrative structure (Setup → Inciting Incident → Rising Action × 3 → Climax → Resolution → Reflection)
 - **User revision**: Context-aware feedback loop — "make it funnier", "give the dragon a name", "make it longer"
 - **Persistent library**: All stories saved to SQLite; accessible via the sidebar across sessions
-
-### Content Quality
-- **Age-calibrated vocabulary**: Three profiles (ages 5–6, 7–8, 9–10) with specific word-length, sentence-complexity, and emotion-vocabulary rules
-- **Six mandatory engagement devices**: Dialogue, sensory detail, suspense beat, repeating refrain, inner thought, warm closing image
-- **God/gratitude salutation**: Every story ends with a gentle, theme-matched gratitude paragraph
-- **Scary element redirect**: Automatically converts frightening content to gentle alternatives
 
 ### User Experience
 - **Streaming output**: Story appears word-by-word in real time
@@ -132,7 +123,7 @@ Stories are scored out of **12 points** (6 criteria × 2 points each). Pass thre
 
 | Criterion | 0 | 1 | 2 |
 |---|---|---|---|
-| Age Appropriateness | Scary/violent content | Minor issues | Fully safe and age-suitable |
+| Age Appropriateness(critical, resolved on priority basis) | Scary/violent content | Minor issues | Fully safe and age-suitable |
 | Narrative Completeness | Missing sections | Partial arc | Clear 7-beat beginning/middle/end |
 | Engagement | None of: dialogue, sensory, suspense, refrain | Some present | All four present |
 | Alignment | Ignores request | Partially matches | Faithfully addresses request |
@@ -194,34 +185,8 @@ Every pipeline step writes a structured entry to `agent.log` with:
 
 ---
 
-## Edge Case Hardening
-
-12 failure modes identified and fixed via automated tests (`test_edge_cases.py`):
-
-| # | Issue | Fix |
-|---|---|---|
-| 1 | XSS via model-generated HTML | `html.escape()` on all story content before injection |
-| 2 | No retry on API errors | Exponential backoff (3×) for 429/5xx/timeout in `llm.py` |
-| 3 | Judge scores out of range (e.g. 15/12) | `_validate_and_fix()` clamps each criterion to [0,2], recalculates total |
-| 4 | Empty title from leading blank lines | `_extract_title_body()` skips blank lines to find first real line |
-| 5 | TTS fails on text with no punctuation | `_hard_split()` word-boundary fallback guarantees ≤4000 chars |
-| 6 | Classifier length labels mismatched | Updated to 600/850/1200 to match storyteller targets |
-| 7 | Scary flag classified but unused | `has_scary_elements=True` injects `SAFETY REDIRECT` into storyteller prompt |
-| 8 | Corrupted DB metadata crashes sidebar | `try/except JSONDecodeError` in `_result_from_db_row()` |
-| 9 | SQLite locks under concurrent users | WAL journal mode + 10s timeout in `_connect()` |
-| 10 | Scary content scores 2/2 on age safety | Judge rubric explicitly penalises frightening imagery |
-| 11 | Audio cache grows without bound | `OrderedDict` LRU cache capped at 5 entries (~2MB max) |
-| 12 | Stale API client on key change | Documented; restart process to pick up new key |
-
-Run the tests at any time (no API calls needed):
-```bash
-python test_edge_cases.py
-```
-
----
 
 ## Deploying to Streamlit Cloud
-
 1. Push this repo to GitHub (`.env`, `story_library.db`, and `agent.log` are in `.gitignore`)
 2. Go to [share.streamlit.io](https://share.streamlit.io) and create a new app pointing to `app.py`
 3. In **App Settings > Secrets**, add:
