@@ -201,8 +201,6 @@ Every pipeline step writes a structured entry to `agent.log` with:
 
 ## What I Would Build Next
 
-*(From `main.py` — if given 2 more hours)*
-
 1. **DALL-E Illustrations** — Generate one image per story beat, turning the output into a true interactive picture book that children can look at while listening.
 2. **User Rating System** — Thumbs-up/thumbs-down per story. Over time, the agent learns which genres, tones, and vocabulary levels produce the highest-rated stories for each age group — closing a true reinforcement loop.
 3. **Multi-user Accounts** — Streamlit authentication so families maintain their own persistent story library.
