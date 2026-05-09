@@ -96,13 +96,6 @@ flowchart TD
 - **Clean story card**: Only title and story shown in the main display; technical details in collapsible expanders
 - **Quality breakdown**: Score bar + 6-metric grid per judge pass
 
-### Reliability & Observability
-- **Session logging**: Every pipeline step timed and logged to `agent.log` with session ID prefix
-- **Exponential backoff**: 3-retry policy on all API calls
-- **XSS protection**: All model-generated content HTML-escaped before injection
-- **SQLite WAL mode**: Concurrent-safe writes for multi-user deployments
-- **12 edge cases hardened**: Score clamping, empty title guard, TTS hard-split fallback, LRU audio cache, JSON parse guards, and more
-
 ---
 
 ## Age Calibration
