@@ -1,4 +1,4 @@
-# Bedtime Story Generator — Hippocratic AI Coding Assignment
+# Bedtime Story Generator
 
 A production-grade, multi-agent bedtime story system built on `gpt-3.5-turbo`. It takes any story request and produces an age-calibrated, engaging, quality-assured bedtime story complete with text-to-speech narration, a persistent story library, and full session logging.
 
