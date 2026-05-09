@@ -255,7 +255,7 @@ if not st.session_state.result:
         except Exception as e:
             log.error(f"Classify failed: {e}", exc_info=True)
             st.error(f"Generation failed: {e}")
-            st.info("Ensure your OPENAI_API_KEY is set correctly.")
+            st.info("Refer to Readme.md and set .env file with an OpenAI API key. Ensure your OPENAI_API_KEY is set correctly.")
             st.stop()
 
         # Step 2 — Plan
