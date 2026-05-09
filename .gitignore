@@ -1,0 +1,25 @@
+# Environment file — contains your secret API key. NEVER commit this.
+.env
+
+# Auto-created SQLite database. Contains user stories. Not needed in repo.
+story_library.db
+
+# Activity log. Can get large and contains no code.
+agent.log
+
+# Python cache
+__pycache__/
+*.py[cod]
+*.pyo
+
+# Virtual environments
+venv/
+env/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Streamlit local config
+.streamlit/secrets.toml
